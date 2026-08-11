@@ -84,7 +84,7 @@ operation:
 
 ## Prerequisites
 
-1. **WSO2 Integrator : MI 4.6.0** and **WSO2 Integrator: MI for VS Code**.
+1. **WSO2 Integrator : MI 4.7.0** and **WSO2 Integrator: MI for VS Code**.
 2. **GnuPG (`gpg`) installed and on the `PATH`** — used to create and export the demo keys. Check with
    `gpg --version`; if it is missing, install it from the
    [official GnuPG downloads](https://gnupg.org/download/index.html):

@@ -41,7 +41,7 @@ Follow the below steps to create an integration project using the WSO2 Integrato
 
 4. In the **Project Creation Form**, enter a suitable name for the integration project under **Project Name**.
 
-5. Ensure `4.6.0` is selected as the **WSO2 Integrator: MI runtime version**.
+5. Ensure `4.7.0` is selected as the **WSO2 Integrator: MI runtime version**.
 
 6. Provide a location for the integration project under **Project Directory**.
 
@@ -57,7 +57,7 @@ Follow the below steps to create an integration project using the WSO2 Integrato
     You need the following to work with the MI for VS Code extension.
 
     - Java Development Kit (JDK) version 25
-    - WSO2 Integrator:  MI 4.6.0 runtime
+    - WSO2 Integrator:  MI 4.7.0 runtime
 
     If you don't have them installed in your local machine, these will be automatically prompted for downloading and configured by the WSO2 Integrator: MI for VS Code extension during the project creation step:
 

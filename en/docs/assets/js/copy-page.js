@@ -16,8 +16,8 @@
      * First checks for a data-src-path attribute on the body element for the actual source path.
      * Falls back to reconstructing from the HTML URL if the attribute is missing.
      * Logic:
-     * - /en/4.6.0/guides/foo/index.html -> /en/4.6.0/guides/foo.md
-     * - /en/4.6.0/guides/bar.html -> /en/4.6.0/guides/bar.md
+     * - /en/4.7.0/guides/foo/index.html -> /en/4.7.0/guides/foo.md
+     * - /en/4.7.0/guides/bar.html -> /en/4.7.0/guides/bar.md
      */
     function getFlattenedMarkdownUrlFromHtmlUrl(htmlUrl) {
         // First, check if the page template provided the source path via data attribute
@@ -277,7 +277,7 @@
             isHomePage = true;
         }
 
-        // Two-segment language/version landing pages (e.g., /en/latest/, /en/4.6.0/)
+        // Two-segment language/version landing pages (e.g., /en/latest/, /en/4.7.0/)
         if (segments.length === 2) {
             const lang = segments[0];
             const version = segments[1];
