@@ -53,13 +53,13 @@ There may be scenarios where you need to create a customized base WSO2 Integrato
 The example below shows how to copy custom JARs into the MI runtime's `lib` directory:
 
 ```docker
-FROM registry.wso2.com/wso2-integrator/mi:4.6.0
+FROM registry.wso2.com/wso2-integrator/mi:4.7.0
 
 USER wso2carbon
 
 ARG USER_HOME=/home/${USER}
 ARG WSO2_SERVER_NAME=wso2mi
-ARG WSO2_SERVER_VERSION=4.6.0
+ARG WSO2_SERVER_VERSION=4.7.0
 ARG WSO2_SERVER=${WSO2_SERVER_NAME}-${WSO2_SERVER_VERSION}
 ARG WSO2_SERVER_HOME=${USER_HOME}/${WSO2_SERVER}
 

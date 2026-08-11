@@ -531,7 +531,6 @@ When you use the [transport.vfs.FileURI](#vfs-transport-file_url) parameter, you
             <a href="https://www.javadoc.io/doc/com.hierynomus/smbj/0.14.0/com/hierynomus/msdtyp/AccessMask.html"
                target="_blank" rel="noopener noreferrer">SMBJ AccessMask documentation</a>.
             <br><br>
-            <b>Note:</b> This parameter is available from MI 4.6.0.3 onwards.
          </td>
       </tr>
    </tbody>
