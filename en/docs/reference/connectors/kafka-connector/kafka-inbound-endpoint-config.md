@@ -515,7 +515,7 @@ The content type of the injected message depends on the configured `contentType`
 
 A poison pill is a record that Kafka could not deserialize. In batch mode, poison pills detected in a poll are **skipped individually** — they are not included in the batch payload injected to the inbound sequence. A warning is logged for each skipped poison pill.
 
-To forward poison pills to a Dead Letter Queue (DLQ) topic instead of silently discarding them, configure the `kafka.dlq.topic` parameter:
+To forward poison pills to a Dead Letter Queue (DLQ) topic instead of logging and skipping them, configure the `kafka.dlq.topic` parameter:
 
 ```xml
 <parameter name="kafka.dlq.topic">my-dlq-topic</parameter>
