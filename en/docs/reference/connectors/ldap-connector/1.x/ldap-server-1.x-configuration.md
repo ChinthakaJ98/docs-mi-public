@@ -35,6 +35,16 @@ To use the LDAP connector, add the `<ldap.init>` element in your configuration b
             <td>The boolean value to check whether the certificate is enabled or not.</td>
             <td>Yes</td>
         </tr>
+        <tr>
+            <td>binaryAttributes</td>
+            <td>
+                A list of space-separated attribute names that should be treated as binary attributes. The values of these attributes will be returned as base64-encoded strings.
+                <hr/>
+                **Note**: This configuration is available from LDAP connector version **1.0.17 and above**.
+                `objectGUID` is treated as a binary attribute by default and it will be returned as UUID string.
+            </td>
+            <td>No</td>
+        </tr>
     </table>
 
     **Sample configuration**
