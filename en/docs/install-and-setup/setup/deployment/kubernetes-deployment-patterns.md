@@ -116,7 +116,7 @@ In a Kubernetes deployment, since pods are ephemeral and do not share a local fi
             - name: mi
               volumeMounts:
                 - name: shared-registry
-                  mountPath: /home/wso2carbon/wso2mi-4.1.0/registry
+                  mountPath: "<MI_HOME>/registry"
           volumes:
             - name: shared-registry
               persistentVolumeClaim:
