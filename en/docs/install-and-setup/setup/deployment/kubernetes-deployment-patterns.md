@@ -98,10 +98,13 @@ In a Kubernetes deployment, since pods are ephemeral and do not share a local fi
     spec:
       accessModes:
         - ReadWriteMany
+      storageClassName: "<RWX_STORAGE_CLASS_NAME>"
       resources:
         requests:
           storage: 1Gi
     ```
+
+    Replace `<RWX_STORAGE_CLASS_NAME>` with a StorageClass in your Kubernetes environment that supports `ReadWriteMany` access.
 
 3.  Mount the PVC at the `<MI_HOME>/registry` path in the WSO2 Integrator: MI container specification, using the same PVC across all replicas in the Deployment or StatefulSet.
 
