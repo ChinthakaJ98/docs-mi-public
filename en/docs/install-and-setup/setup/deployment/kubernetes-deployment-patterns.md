@@ -81,7 +81,7 @@ If the MI instance currently executing a particular artifact becomes unavailable
 ### Registry synchronization
 
 !!! Note
-    Registry sharing is only required if you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, and you want that state to persist when new nodes join the cluster. If you do not use these dynamic state changes, registry sharing is not required for basic coordination.
+    Registry sharing is required only if your deployment includes Message Processors or Inbound Endpoints and you need runtime state changes (**active**/**inactive**)—for example, toggled via the Management API or Integration Control Plane—to persist when new nodes join the cluster. If you do not use runtime state changes, registry sharing is not required for basic coordination.
 
 The shared registry maintains the state (**active**/**inactive**) of the Message Processor or Inbound Endpoint artifact, ensuring that the same state is maintained across all WSO2 Integrator: MI replicas in the cluster.
 
@@ -89,20 +89,36 @@ In a Kubernetes deployment, since pods are ephemeral and do not share a local fi
 
 1.  Provision a `PersistentVolume` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount it concurrently. The exact storage class depends on your Kubernetes environment (for example, NFS-backed storage, Azure Files, or a cloud provider's file storage service).
 2.  Create a `PersistentVolumeClaim` (PVC) that requests this shared volume.
+
+    ```yaml
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: mi-shared-registry-pvc
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Gi
+    ```
+
 3.  Mount the PVC at the `<MI_HOME>/registry` path in the WSO2 Integrator: MI container specification, using the same PVC across all replicas in the Deployment or StatefulSet.
 
-```yaml
+    ```yaml
     spec:
-      containers:
-        - name: mi
-          volumeMounts:
+      template:
+        spec:
+          containers:
+            - name: mi
+              volumeMounts:
+                - name: shared-registry
+                  mountPath: "<MI_HOME>/registry"
+          volumes:
             - name: shared-registry
-              mountPath: <MI_HOME>/registry
-      volumes:
-        - name: shared-registry
-          persistentVolumeClaim:
-            claimName: mi-shared-registry-pvc
-```
+              persistentVolumeClaim:
+                claimName: mi-shared-registry-pvc
+    ```
 
 !!! Tip
     If your Kubernetes cluster or cloud provider does not support `ReadWriteMany` volumes, consider using an external file storage solution (such as NFS) provisioned outside the cluster and mounted into each pod, or evaluate whether registry sharing is actually required for your use case before introducing this additional infrastructure dependency.
