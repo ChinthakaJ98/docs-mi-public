@@ -77,3 +77,29 @@ You can still deploy these stateful artifacts in multiple replicas as long as co
 When stateful artifacts are deployed with coordination enabled across multiple WSO2 Integrator: MI replicas, each artifact such as Scheduled triggers or message processors is executed by only one MI instance at a time. By default, these artifacts are automatically assigned to available nodes in the cluster, ensuring consistent and conflict free execution.
 
 If the MI instance currently executing a particular artifact becomes unavailable, another node will seamlessly take over its execution. This ensures high availability and avoids service interruptions by enabling automatic failover of stateful tasks.
+
+### Registry synchronization
+
+!!! Note
+    Registry sharing is only required if you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, and you want that state to persist when new nodes join the cluster. If you do not use these dynamic state changes, registry sharing is not required for basic coordination.
+
+The shared registry maintains the state (**active**/**inactive**) of the Message Processor/inbound endpoint artifact, ensuring that the same state is maintained across all WSO2 Integrator: MI replicas in the cluster.
+
+In a Kubernetes deployment, since pods are ephemeral and do not share a local file system by default, the `<MI_HOME>/registry` directory must be backed by a shared, persistent volume that is accessible by all replicas simultaneously.
+
+1.  Provision a `PersistentVolume` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount it concurrently. The exact storage class depends on your Kubernetes environment (for example, NFS-backed storage, Azure Files, or a cloud provider's file storage service).
+2.  Create a `PersistentVolumeClaim` (PVC) that requests this shared volume.
+3.  Mount the PVC at the `<MI_HOME>/registry` path in the WSO2 Integrator: MI container specification, using the same PVC across all replicas in the Deployment or StatefulSet.
+
+```yaml
+    volumeMounts:
+      - name: shared-registry
+        mountPath: <MI_HOME>/registry
+    volumes:
+      - name: shared-registry
+        persistentVolumeClaim:
+          claimName: mi-shared-registry-pvc
+```
+
+!!! Tip
+    If your Kubernetes cluster or cloud provider does not support `ReadWriteMany` volumes, consider using an external file storage solution (such as NFS) provisioned outside the cluster and mounted into each pod, or evaluate whether registry sharing is actually required for your use case before introducing this additional infrastructure dependency.
