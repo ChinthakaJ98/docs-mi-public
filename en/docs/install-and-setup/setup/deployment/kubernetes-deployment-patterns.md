@@ -87,7 +87,7 @@ The shared registry maintains the state (**active**/**inactive**) of the Message
 
 In a Kubernetes deployment, since pods are ephemeral and do not share a local file system by default, the `<MI_HOME>/registry` directory must be backed by a shared, persistent volume that is accessible by all replicas simultaneously.
 
-1.  Provision a `PersistentVolume` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount it concurrently. The exact storage class depends on your Kubernetes environment (for example, NFS-backed storage, Azure Files, or a cloud provider's file storage service).
+1.  Ensure your Kubernetes environment has a `StorageClass` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount the same volume concurrently. Common examples include NFS-backed storage, Azure Files, or a cloud provider's shared file storage service. If no RWX-capable `StorageClass` is available, a `PersistentVolume` can instead be provisioned and bound manually.
 2.  Create a `PersistentVolumeClaim` (PVC) that requests this shared volume.
 
     ```yaml
