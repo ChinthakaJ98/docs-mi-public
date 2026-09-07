@@ -66,6 +66,16 @@ The connection is used to establish a connection to the LDAP instance. The LDAP 
             <td>The maximum number of connections per connection identity that can be maintained concurrently.</td>
             <td>No</td>
         </tr>
+        <tr>
+            <td>binaryAttributes</td>
+            <td>
+                A list of space-separated attribute names that should be treated as binary attributes. The values of these attributes will be returned as base64-encoded strings.
+                <hr/>
+                **Note**: This configuration is available from LDAP connector version **2.0.3 and above**.
+                `objectGUID` is treated as a binary attribute by default and it will be returned as UUID string.
+            </td>
+            <td>No</td>
+        </tr>
     </table>
 
     **Sample configuration**
