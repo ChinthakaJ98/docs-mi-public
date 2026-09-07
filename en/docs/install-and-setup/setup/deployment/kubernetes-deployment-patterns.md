@@ -63,7 +63,7 @@ You can still deploy these stateful artifacts in multiple replicas as long as co
 
 !!! Tip
     - See [Coordination configurations]({{base_path}}/install-and-setup/setup/deployment/configuring-helm-charts/#coordination-configurations) for instructions on configuring coordination across multiple WSO2 Integrator: MI instances using the Helm charts.
-    - If you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, you must share the registry across WSO2 Integrator: MI instances to persist the state when new nodes join the cluster. Refer to [Registry synchronization]({{base_path}}/install-and-setup/setup/deployment/deploying-wso2-mi/#registry-synchronization-sharing) for more information. Registry synchronization is an optional setup and is not required for basic coordination.
+    - If you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, you must share the registry across WSO2 Integrator: MI instances to persist the state when new nodes join the cluster. Refer to the [Registry synchronization](#registry-synchronization) for Kubernetes-specific instructions. Registry synchronization is an optional setup and is not required for basic coordination.
 
 <img src="{{base_path}}/assets/img/integrate/k8s_deployment/k8s_coordination.png">
 
@@ -77,3 +77,45 @@ You can still deploy these stateful artifacts in multiple replicas as long as co
 When stateful artifacts are deployed with coordination enabled across multiple WSO2 Integrator: MI replicas, each artifact such as Scheduled triggers or message processors is executed by only one MI instance at a time. By default, these artifacts are automatically assigned to available nodes in the cluster, ensuring consistent and conflict free execution.
 
 If the MI instance currently executing a particular artifact becomes unavailable, another node will seamlessly take over its execution. This ensures high availability and avoids service interruptions by enabling automatic failover of stateful tasks.
+
+### Registry synchronization
+
+Registry sharing is required if your deployment includes Message Processors, Inbound Endpoints, or any other artifact state or data that needs to be consistent across all nodes in the cluster. 
+
+In a Kubernetes deployment, since pods are ephemeral and do not share a local file system by default, the `<MI_HOME>/registry` directory must be backed by a shared, persistent volume that is accessible by all replicas simultaneously.
+
+1.  Ensure your Kubernetes environment has a `StorageClass` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount the same volume concurrently. Follow your Kubernetes provider's documentation to provision RWX-capable storage in your environment.
+2.  Create a `PersistentVolumeClaim` (PVC) that requests this shared volume.
+
+    ```yaml
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: mi-shared-registry-pvc
+    spec:
+      accessModes:
+        - ReadWriteMany
+      storageClassName: "<RWX_STORAGE_CLASS_NAME>"
+      resources:
+        requests:
+          storage: 1Gi
+    ```
+
+    Replace `<RWX_STORAGE_CLASS_NAME>` with a StorageClass in your Kubernetes environment that supports `ReadWriteMany` access.
+
+3.  Mount the PVC at the `<MI_HOME>/registry` path in the WSO2 Integrator: MI container specification, using the same PVC across all replicas in the Deployment or StatefulSet.
+
+    ```yaml
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mi
+              volumeMounts:
+                - name: shared-registry
+                  mountPath: "<MI_HOME>/registry"
+          volumes:
+            - name: shared-registry
+              persistentVolumeClaim:
+                claimName: mi-shared-registry-pvc
+    ```
