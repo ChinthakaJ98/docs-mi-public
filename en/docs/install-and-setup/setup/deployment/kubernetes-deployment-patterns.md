@@ -63,7 +63,7 @@ You can still deploy these stateful artifacts in multiple replicas as long as co
 
 !!! Tip
     - See [Coordination configurations]({{base_path}}/install-and-setup/setup/deployment/configuring-helm-charts/#coordination-configurations) for instructions on configuring coordination across multiple WSO2 Integrator: MI instances using the Helm charts.
-    - If you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, you must share the registry across WSO2 Integrator: MI instances to persist the state when new nodes join the cluster. Refer to the [Registry synchronization](#registry-synchronization) section below for Kubernetes-specific instructions. Registry synchronization is an optional setup and is not required for basic coordination.
+    - If you dynamically change the state of a Message Processor or Inbound Endpoint using the Management API or Integration Control Plane, you must share the registry across WSO2 Integrator: MI instances to persist the state when new nodes join the cluster. Refer to the [Registry synchronization](#registry-synchronization) for Kubernetes-specific instructions. Registry synchronization is an optional setup and is not required for basic coordination.
 
 <img src="{{base_path}}/assets/img/integrate/k8s_deployment/k8s_coordination.png">
 
@@ -80,14 +80,11 @@ If the MI instance currently executing a particular artifact becomes unavailable
 
 ### Registry synchronization
 
-!!! Note
-    Registry sharing is required only if your deployment includes Message Processors or Inbound Endpoints and you need runtime state changes (**active**/**inactive**)—for example, toggled via the Management API or Integration Control Plane—to persist when new nodes join the cluster. If you do not use runtime state changes, registry sharing is not required for basic coordination.
-
-The shared registry maintains the state (**active**/**inactive**) of the Message Processor or Inbound Endpoint artifact, ensuring that the same state is maintained across all WSO2 Integrator: MI replicas in the cluster.
+Registry sharing is required if your deployment includes Message Processors, Inbound Endpoints, or any other artifact state or data that needs to be consistent across all nodes in the cluster. 
 
 In a Kubernetes deployment, since pods are ephemeral and do not share a local file system by default, the `<MI_HOME>/registry` directory must be backed by a shared, persistent volume that is accessible by all replicas simultaneously.
 
-1.  Ensure your Kubernetes environment has a `StorageClass` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount the same volume concurrently. Common examples include NFS-backed storage, Azure Files, or a cloud provider's shared file storage service. If no RWX-capable `StorageClass` is available, a `PersistentVolume` can instead be provisioned and bound manually.
+1.  Ensure your Kubernetes environment has a `StorageClass` that supports the `ReadWriteMany` (RWX) access mode, so that multiple pods can mount the same volume concurrently. Follow your Kubernetes provider's documentation to provision RWX-capable storage in your environment.
 2.  Create a `PersistentVolumeClaim` (PVC) that requests this shared volume.
 
     ```yaml
@@ -122,6 +119,3 @@ In a Kubernetes deployment, since pods are ephemeral and do not share a local fi
               persistentVolumeClaim:
                 claimName: mi-shared-registry-pvc
     ```
-
-!!! Tip
-    If your Kubernetes cluster or cloud provider does not support `ReadWriteMany` volumes, consider using an external file storage solution (such as NFS) provisioned outside the cluster and mounted into each pod, or evaluate whether registry sharing is actually required for your use case before introducing this additional infrastructure dependency.
